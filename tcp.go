@@ -7,18 +7,27 @@ import (
 )
 
 type TcpServer struct {
-	Addr      string
-	conn      *net.Conn
-	listener  net.Listener
-	ClientMap map[string]*TcpClient
-	lock      sync.Mutex
+	Addr       string
+	conn       *net.Conn
+	listener   net.Listener
+	ClientMap  map[string]*TcpClient
+	lock       sync.Mutex
+	DataHandle func(*TcpServer, []byte)
 }
 
 type TcpClient struct {
-	conn       net.Conn
-	lock       sync.Mutex
-	DataHandle func(*TcpServer, []byte)
-	server     *TcpServer
+	conn   net.Conn
+	lock   sync.Mutex
+	server *TcpServer
+}
+
+func NewTcpServer(addr string, DataHandle func(*TcpServer, []byte)) *TcpServer {
+	result := &TcpServer{
+		Addr:       addr,
+		ClientMap:  map[string]*TcpClient{},
+		DataHandle: DataHandle,
+	}
+	return result
 }
 
 func (s *TcpServer) Run() {
@@ -57,7 +66,7 @@ func (c *TcpClient) GetDataThread() {
 			c.lock.Unlock()
 			break
 		}
-		c.DataHandle(c.server, data)
+		c.server.DataHandle(c.server, data)
 	}
 }
 
@@ -76,4 +85,3 @@ func (c *TcpClient) Get(size int) (data []byte, err error) {
 	c.lock.Unlock()
 	return data[:n], err
 }
-
