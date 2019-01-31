@@ -17,9 +17,9 @@ type TcpServer struct {
 }
 
 type TcpClient struct {
-	conn   net.Conn
-	lock   sync.Mutex
-	server *TcpServer
+	conn       net.Conn
+	lock       sync.Mutex
+	server     *TcpServer
 	DataHandle func(*TcpServer, []byte)
 }
 
@@ -71,6 +71,7 @@ func (c *TcpClient) GetDataThread() {
 			break
 		}
 		c.server.DataHandle(c.server, data)
+		time.Sleep(time.Microsecond * 50)
 	}
 }
 
