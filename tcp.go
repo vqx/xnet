@@ -1,6 +1,7 @@
 package xnet
 
 import (
+	"fmt"
 	"net"
 	"sync"
 	"time"
@@ -19,6 +20,7 @@ type TcpClient struct {
 	conn   net.Conn
 	lock   sync.Mutex
 	server *TcpServer
+	DataHandle func(*TcpServer, []byte)
 }
 
 func NewTcpServer(addr string, DataHandle func(*TcpServer, []byte)) *TcpServer {
@@ -36,6 +38,7 @@ func (s *TcpServer) Run() {
 	if err != nil {
 		panic(`tzh6dhq9kf net.Listen ` + err.Error())
 	}
+	fmt.Println("server start")
 	go s.ListenThread()
 	for {
 		time.Sleep(time.Second)
@@ -48,7 +51,8 @@ func (s *TcpServer) ListenThread() {
 			continue
 		}
 		tmpClient := &TcpClient{
-			conn: conn,
+			server: s,
+			conn:   conn,
 		}
 		s.lock.Lock()
 		s.ClientMap[GetClientId(conn.RemoteAddr().String())] = tmpClient
