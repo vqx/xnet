@@ -1,6 +1,6 @@
 package xnet
 
-//todo try ,It's really can user interface.
+//todo try ,It's really can use interface.
 type Server interface {
 	MainLogic() string
 }
