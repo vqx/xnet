@@ -44,6 +44,7 @@ func (s *TcpServer) Run() {
 		time.Sleep(time.Second)
 	}
 }
+
 func (s *TcpServer) ListenThread() {
 	for {
 		conn, err := s.listener.Accept()
